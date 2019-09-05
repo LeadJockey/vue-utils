@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <input-autocomplete></input-autocomplete>
+    <input-autocomplete @eventrequestSearch="requestSearch"></input-autocomplete>
   </div>
 </template>
 
@@ -11,6 +11,11 @@ export default {
   name: 'app',
   components: {
     InputAutocomplete
+  },
+  methods:{
+    requestSearch(input){
+      console.log('requestSearch', input)
+    }
   }
 }
 </script>
