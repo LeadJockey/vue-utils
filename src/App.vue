@@ -1,32 +1,30 @@
 <template>
   <div id="app">
-    <input-autocomplete @eventrequestSearch="requestSearch"></input-autocomplete>
+    <ExamplePage></ExamplePage>
   </div>
 </template>
 
 <script>
-import InputAutocomplete from './components/InputAutocomplete.vue'
+import ExamplePage from './components/ExamplePage.vue'
 
 export default {
   name: 'app',
   components: {
-    InputAutocomplete
-  },
-  methods:{
-    requestSearch(input){
-      console.log('requestSearch', input)
-    }
+    ExamplePage
   }
 }
 </script>
 
 <style>
+*{margin:0;padding:0}
+body{background-color:seashell}
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
+  margin: 60px auto;
+  width:600px;
 }
 </style>
