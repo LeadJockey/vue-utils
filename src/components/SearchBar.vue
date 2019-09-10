@@ -2,26 +2,28 @@
   <div class="comp_search_bar">
     <div class="search_box">
       <input
-        :value="input"
-        @keyup="update"
-        @focus="update"
+        v-model="input"
+        @keyup="onChangeUpdate"
+        @focus="onChangeUpdate"
+        @blur="onBlurSuggest"
         type="text"
         class="inp_search"
         placeholder="검색어를 입력해주세요."
       />
     </div>
 
-    <div v-if="hasSuggestList" class="suggest_box">
+    <div v-if="isOpenSuggest" class="suggest_box">
       <button
         v-for="({id, name}) in suggestList"
         :key="id"
-        @click="search(name)"
+        @click="onClickSearch(name)"
+        @focus="openSuggest"
+        @blur="onBlurSuggest"
         class="item_suggest"
-      >{{name}} </button>
+      >{{name}}</button>
     </div>
 
     <button type="button" class="btn_search" @click="emitRequestSearch">검색</button>
-    
   </div>
 </template>
 
@@ -36,7 +38,8 @@ export default {
   data() {
     return {
       input: '',
-      suggestList: []
+      suggestList: [],
+      isOpenSuggest: false
     }
   },
   computed: {
@@ -45,23 +48,33 @@ export default {
     }
   },
   methods: {
-    update: _.throttle(function(evt) {
-      this.setInput(evt.target.value)
+    onChangeUpdate: _.throttle(function(evt) {
+      this.input = evt.target.value
       evt.keyCode === 13 ? this.emitRequestSearch() : this.requestSuggest()
     }, WAITING_TIME),
-    search(name) {
-      this.setInput(name)
+    onClickSearch(selectedWord) {
+      this.input = selectedWord
       this.emitRequestSearch()
     },
-    setInput(input) {
-      this.input = input
+    onBlurSuggest(evt) {
+      if (!evt.relatedTarget) return this.closeSuggest()
+      if (!evt.relatedTarget.className) return this.closeSuggest()
+      if (evt.relatedTarget.className !== 'item_suggest') return this.closeSuggest()
     },
     resetSuggestList() {
       this.suggestList = []
     },
+    openSuggest() {
+      if (!this.hasSuggestList) return
+      this.isOpenSuggest = true
+    },
+    closeSuggest() {
+      this.isOpenSuggest = false
+    },
     requestSuggest() {
       // FIXME: temp call seggest api
       this.suggestList = this.input.split('').map(str => ({ id: uuidv4(), name: str }))
+      this.openSuggest()
     },
     emitRequestSearch() {
       console.table({
@@ -102,29 +115,29 @@ export default {
   background-color: #efefef;
 }
 .comp_search_bar .suggest_box {
-  overflow-y:scroll;
-  overflow-x:auto;
+  overflow-y: scroll;
+  overflow-x: auto;
   position: absolute;
   top: 32px;
   left: 0;
   right: 0;
-  max-height:240px;
+  max-height: 240px;
   background-color: #fff;
   border: 1px solid #959595;
 }
 .comp_search_bar .item_suggest {
   display: inline-block;
   width: 100%;
-  height:24px;
+  height: 24px;
   text-align: left;
   text-indent: 10px;
-  border:0 none
+  border: 0 none;
 }
 .comp_search_bar .item_suggest:hover {
   background-color: #efefef;
 }
 .comp_search_bar .item_suggest:focus {
   background-color: #efefef;
-  outline:0
+  outline: 0;
 }
 </style>
